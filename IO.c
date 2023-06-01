@@ -60,7 +60,7 @@ void print_warning(char* message){
 
 
 Config parse_opts(int argc, char **argv){
-    char *short_opts = "a:b:c:t:x:y:h";
+    char *short_opts = "a:b:c:t:x:y:s:h";
     int opt;
     int longIndex;
     extern int opterr;
@@ -70,6 +70,7 @@ Config parse_opts(int argc, char **argv){
             {"point2",  required_argument, NULL, 'b'},
             {"point3",  required_argument, NULL, 'c'},
             {"thickness", required_argument, NULL, 't'},
+            {"side_length", required_argument, NULL, 's'},
             {"color1",   required_argument, NULL, 'l'},
             {"fill", no_argument, NULL, 'i'},
             {"color2",   required_argument, NULL, 'f'},
@@ -78,7 +79,7 @@ Config parse_opts(int argc, char **argv){
             {"help",    no_argument,       NULL, 'h'},
             {NULL,      no_argument,       NULL, 0}
     };
-    Config config = {NULL, NULL, NULL, 0, NULL, false, NULL, 0, 0};
+    Config config = {NULL, NULL, NULL, 0, 0, NULL, false, NULL, 0, 0};
     while (true) {
         opt = getopt_long(argc, argv, short_opts, longOpts, &longIndex);
         if(opt == -1) break;

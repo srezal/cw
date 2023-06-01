@@ -93,6 +93,18 @@ void PaintRectangle(PngImage* image, Point left_up_corner, Point right_bottom_co
 }
 
 
+void DrawRectangle(PngImage* image, Point O, int side_length, Color color){
+    Point a = {O.x - (side_length / 2), O.y - (side_length / 2)};
+    Point b = {O.x + (side_length - 1 - (side_length / 2)), O.y - (side_length / 2)};
+    Point c = {O.x + (side_length - 1 - (side_length / 2)), O.y + (side_length - 1 - (side_length / 2))};
+    Point d = {O.x - (side_length / 2), O.y + (side_length - 1 - (side_length / 2))};
+    DrawLine(image, a, b, 1, color, false);
+    DrawLine(image, b, c, 1, color, false);
+    DrawLine(image, c, d, 1, color, false);
+    DrawLine(image, d, a, 1, color, false);
+}
+
+
 void MakeCollage(PngImage* image, int x_photos, int y_photos){
     int new_width = image->width * x_photos;
     int new_height = image->height * y_photos;
@@ -153,4 +165,18 @@ void FindMaxRectangleAndRepaint(PngImage* image, Color old_color, Color new_colo
         }
     }
     PaintRectangle(image, left_up, right_bottom, new_color);
+}
+
+
+void OutlineRedPixels(PngImage* image, int side_length, Color outline_color){
+    Color red_color = {255, 0, 0, 255};
+    for(int i = 0; i < image->height; i++){
+        for(int j = 0; j < image->width; j++){
+            Color current_color = GetPixelColor(image, j, i);
+            Point O = {j, i};
+            if(colors_equal(red_color, current_color)){
+                DrawRectangle(image, O, side_length, outline_color);
+            }
+        }
+    }
 }

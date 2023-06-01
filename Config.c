@@ -78,6 +78,9 @@ void set_config(Config* config, int opt, char* arg, int optopt){
         case 't':
             config->line_thickness = atoi(arg);
             break;
+        case 's':
+            config->side_length = atoi(arg);
+            break;
         case 'l':
             if(parse_color(arg, &r, &g, &b) == ERR_CODE){
                 cleanup_config_allocation(config);

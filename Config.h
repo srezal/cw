@@ -11,6 +11,7 @@ typedef struct Config{
     Point* point2;
     Point* point3;
     int line_thickness;
+    int side_length;
     Color* color1;
     bool is_fill;
     Color* color2;
