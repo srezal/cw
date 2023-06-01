@@ -123,6 +123,12 @@ void set_config(Config* config, int opt, char* arg, int optopt){
             config->y_photos = y_photos;
             break;
         }
+        case 'I':{
+            char* second_image_name = malloc(strlen(arg) + 1);
+            strcpy(second_image_name, arg);
+            config->second_image_name = second_image_name;
+            break;
+        }
         case '?':{
             char warning_msg[100];
             sprintf(warning_msg, "Встречен неизвестный флаг: \'-%c\'", (char) optopt);

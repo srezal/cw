@@ -42,6 +42,21 @@ int main(int argc, char **argv) {
     }
     else if(!strcmp("rectangle", FUNC)) FindMaxRectangleAndRepaint(&image, *config.color1, *config.color2);
     else if(!strcmp("collage", FUNC)) MakeCollage(&image, config.x_photos, config.y_photos);
+    else if(!strcmp("merge", FUNC)){
+        char* second_image_path;
+        if(create_path_to_file(&second_image_path, config.second_image_name) == 1){
+            cleanup_config_allocation(&config);
+            cleanup_image_allocation(&image);
+            free(ORIGIN_PATH);
+            free(PROCESSED_PATH);
+            print_error("Не удаётся открыть файл. Проверьте, что правильно ввели название файла!");
+            exit(1);
+        }
+        PngImage image2;
+        read_png_file(second_image_path, &image2);
+        MergeImages(&image, &image2);
+        cleanup_image_allocation(&image2);
+    }
     else{
         print_error("К сожалению, наша программа пока что не умеет выполнять такую функцию :(");
         cleanup_image_allocation(&image);

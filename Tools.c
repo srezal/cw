@@ -154,3 +154,46 @@ void FindMaxRectangleAndRepaint(PngImage* image, Color old_color, Color new_colo
     }
     PaintRectangle(image, left_up, right_bottom, new_color);
 }
+
+
+void MergeImages(PngImage* image1, PngImage* image2){
+    int width_pixel = n_color_channels(image1);
+    PngImage* wider_image = (image1->width > image2->width) ? image1 : image2;
+    PngImage* thinner_image = (image1->width <= image2->width) ? image1 : image2;
+    PngImage* upper_image = (image1->height > image2->height) ? image1 : image2;
+    PngImage* lower_image = (image1->height <= image2->height) ? image1 : image2;
+    png_byte** new_pixel_arr = (png_byte**) malloc(sizeof(png_byte*) * upper_image->height);
+    for (int y = 0; y < upper_image->height; y++)
+        new_pixel_arr[y] = (png_byte*) calloc(wider_image->width * width_pixel, sizeof(png_byte)); // RGBA for invicible
+    int h_border = (upper_image->height - lower_image->height) / 2;
+    int v_border = (wider_image->width - thinner_image->width) / 2;
+    for(int y = 0; y < upper_image->height; y++){
+        for(int x = 0; x < wider_image->width; x++){
+            Color color;
+            if((y >= h_border) && (y < h_border + lower_image->height) && (x >= v_border) && (x < v_border + thinner_image->width)){
+                if(y % 2 == 0) color = GetPixelColor(lower_image, x - (wider_image->width - lower_image->width) / 2, y - h_border);
+                else color = GetPixelColor(upper_image, x - (wider_image->width - upper_image->width) / 2, y);
+            }
+            else if(((y < h_border) || (y >= h_border + lower_image->height))){
+                if(upper_image == wider_image) color = GetPixelColor(upper_image, x - (wider_image->width - upper_image->width) / 2, y);
+                else if((x >= v_border) && (x < v_border + thinner_image->width)) color = GetPixelColor(upper_image, x - (wider_image->width - upper_image->width) / 2, y);
+                else continue;
+            }
+            else if(((x < v_border) || (x >= v_border + thinner_image->width)) && ((y >= h_border) && (y < h_border + lower_image->height))){
+                color = GetPixelColor(wider_image, x, y - (upper_image->height - wider_image->height) / 2);
+            }
+            else continue;
+            new_pixel_arr[y][x * width_pixel] = color.r;
+            new_pixel_arr[y][x * width_pixel + 1] = color.g;
+            new_pixel_arr[y][x * width_pixel + 2] = color.b;
+            if(width_pixel == 4) new_pixel_arr[y][x * 4 + 3] = 255;
+        }
+    }
+    for(int i = 0; i < image1->height; i++){
+        free(image1->row_pointers[i]);
+    }
+    free(image1->row_pointers);
+    image1->width = wider_image->width;
+    image1->height = upper_image->height;
+    image1->row_pointers = new_pixel_arr;
+}
