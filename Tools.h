@@ -11,3 +11,4 @@ void Fill(PngImage* image, int x, int y, Color fill_color);
 void FillTriangle(PngImage* image,  Point a, Point b, Point c, Color fill_color);
 void MakeCollage(PngImage* image, int x_photos, int y_photos);
 void FindMaxRectangleAndRepaint(PngImage* image, Color old_color, Color new_color);
+void FillWithArea(PngImage* image, Point left_up, Point bottom_right);

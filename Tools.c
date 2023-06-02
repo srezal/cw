@@ -154,3 +154,43 @@ void FindMaxRectangleAndRepaint(PngImage* image, Color old_color, Color new_colo
     }
     PaintRectangle(image, left_up, right_bottom, new_color);
 }
+
+
+void FillWithArea(PngImage* image, Point left_up, Point bottom_right){
+    int width_pixel = n_color_channels(image);
+    int area_width = bottom_right.x - left_up.x + 1;
+    int area_height = bottom_right.y - left_up.y + 1;
+    png_byte** _area = malloc(sizeof(png_byte*) * area_height);
+    for(int i = 0; i < area_height; i++){
+        _area[i] = malloc(sizeof(png_byte) * area_width * width_pixel);
+    }
+    Point dest_left_up = {0, 0};
+    copy_area(_area, image->row_pointers, left_up, bottom_right, dest_left_up, width_pixel);
+    // fill image ----------------------
+    int remainder_pixels_x = image->width % area_width;
+    int remainder_pixels_y = image->height % area_height;
+    for(int i = 0; i <= (image->height / area_height); i++){
+        for(int j = 0; j < (image->width / area_width); j++){
+            Point src_left_up = {0, 0};
+            Point src_right_bottom = {area_width - 1, area_height - 1};
+            if(i == (image->height / area_height)){
+                src_right_bottom.y = remainder_pixels_y - 1;
+            }
+            Point dest_left_up = {area_width * j, area_height * i};
+            copy_area(image->row_pointers, _area, src_left_up, src_right_bottom, dest_left_up, width_pixel);
+        }
+        if(remainder_pixels_x > 0){
+            Point src_left_up = {0, 0};
+            Point src_right_bottom = { remainder_pixels_x - 1, area_height - 1};
+            if(i == (image->height / area_height)){
+                src_right_bottom.y = remainder_pixels_y - 1;
+            }
+            Point dest_left_up = {image->width -  remainder_pixels_x, area_height * i};
+            copy_area(image->row_pointers, _area, src_left_up, src_right_bottom, dest_left_up, width_pixel);
+        }
+    }
+    for(int i = 0; i < area_height; i++){
+        free(_area[i]);
+    }
+    free(_area);
+}

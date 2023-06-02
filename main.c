@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
     }
     else if(!strcmp("rectangle", FUNC)) FindMaxRectangleAndRepaint(&image, *config.color1, *config.color2);
     else if(!strcmp("collage", FUNC)) MakeCollage(&image, config.x_photos, config.y_photos);
+    else if(!strcmp("area", FUNC)) FillWithArea(&image, *config.point1, *config.point2);
     else{
         print_error("К сожалению, наша программа пока что не умеет выполнять такую функцию :(");
         cleanup_image_allocation(&image);
