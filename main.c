@@ -6,12 +6,17 @@
 #include "Config.h"
 #include "Utils.h"
 #include "IO.h"
+#include "GraphicsUtils.h"
 
 
 int main(int argc, char **argv) {
     char* origin_file_name = argv[1];
     char* processed_file_name = argv[2];
     char* FUNC = argv[3];
+    if(argc < 4){
+        print_error("Вы забыли указать имя входного файла / имя выходного файла / имя функции!");
+        exit(1);
+    }
     Config config = parse_opts(argc, argv);
     char* ORIGIN_PATH;
     char* PROCESSED_PATH;
@@ -42,6 +47,29 @@ int main(int argc, char **argv) {
     }
     else if(!strcmp("rectangle", FUNC)) FindMaxRectangleAndRepaint(&image, *config.color1, *config.color2);
     else if(!strcmp("collage", FUNC)) MakeCollage(&image, config.x_photos, config.y_photos);
+    else if(!strcmp("merge", FUNC)){
+        char* second_image_path;
+        if(create_path_to_file(&second_image_path, config.second_image_name) == 1){
+            cleanup_config_allocation(&config);
+            cleanup_image_allocation(&image);
+            free(ORIGIN_PATH);
+            free(PROCESSED_PATH);
+            print_error("Не удаётся открыть файл. Проверьте, что правильно ввели название файла!");
+            exit(1);
+        }
+        PngImage second_image;
+        read_png_file(second_image_path, &second_image);
+        if(n_color_channels(&image) != n_color_channels(&second_image)){
+            cleanup_config_allocation(&config);
+            cleanup_image_allocation(&image);
+            cleanup_image_allocation(&second_image);
+            free(ORIGIN_PATH);
+            free(PROCESSED_PATH);
+            print_error("У обоих изображений должна быть одна и та же цветовая модель!");
+            exit(1);
+        }
+        VerticalMergeImages(&image, &second_image, *config.color1);
+    }
     else{
         print_error("К сожалению, наша программа пока что не умеет выполнять такую функцию :(");
         cleanup_image_allocation(&image);

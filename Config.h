@@ -16,6 +16,7 @@ typedef struct Config{
     Color* color2;
     int x_photos;
     int y_photos;
+    char* second_image_name;
 } Config;
 
 

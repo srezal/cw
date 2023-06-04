@@ -123,6 +123,10 @@ void set_config(Config* config, int opt, char* arg, int optopt){
             config->y_photos = y_photos;
             break;
         }
+        case 'I':{
+            config->second_image_name = arg;
+            break;
+        }
         case '?':{
             char warning_msg[100];
             sprintf(warning_msg, "Встречен неизвестный флаг: \'-%c\'", (char) optopt);
@@ -195,6 +199,16 @@ bool check_is_full_config_for_func(char* FUNC, Config* config){
         }
         else if(config->y_photos == 0){
             print_error("Вы забыли указать количество фотографий по оси Y!");
+            return false;
+        }
+    }
+    else if(!strcmp(FUNC, "merge")){
+        if(config->second_image_name == NULL){
+            print_error("Вы забыли указать имя второго изображения!");
+            return false;
+        }
+        else if(config->color1 == NULL){
+            print_error("Вы забыли указать цвет заливки!");
             return false;
         }
     }

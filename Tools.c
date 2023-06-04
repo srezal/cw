@@ -3,6 +3,7 @@
 #include "Tools.h"
 #include "GraphicsStructs.h"
 #include "GraphicsUtils.h"
+#include "GraphicsIO.h"
 #include "Utils.h"
 
 
@@ -153,4 +154,40 @@ void FindMaxRectangleAndRepaint(PngImage* image, Color old_color, Color new_colo
         }
     }
     PaintRectangle(image, left_up, right_bottom, new_color);
+}
+
+
+void VerticalMergeImages(PngImage* first_image, PngImage* second_image, Color fill_color){
+    int width_pixel = n_color_channels(first_image);
+    int new_width = MAX(first_image->width, second_image->width);
+    int new_height = first_image->height + second_image->height;
+    png_byte** new_pixel_arr = (png_byte**) malloc(sizeof(png_byte*) * new_height);
+    for (int y = 0; y < new_height; y++)
+        new_pixel_arr[y] = (png_byte*) malloc(sizeof(png_byte) * new_width * width_pixel);
+    Point left_up_corner = {0, 0};
+    Point first_right_bottom_corner = {first_image->width - 1, first_image->height - 1};
+    copy_area(new_pixel_arr, first_image->row_pointers, left_up_corner, first_right_bottom_corner, left_up_corner, width_pixel);
+    Point second_right_bottom_corner = {second_image->width - 1, second_image->height - 1};
+    Point dst_left_up_corner = {0, first_image->height};
+    copy_area(new_pixel_arr, second_image->row_pointers, left_up_corner, second_right_bottom_corner, dst_left_up_corner, width_pixel);
+    int first_image_old_width = first_image->width;
+    int first_image_old_height = first_image->height;
+    for(int i = 0; i < first_image->height; i++){
+        free(first_image->row_pointers[i]);
+    }
+    free(first_image->row_pointers);
+    first_image->row_pointers = new_pixel_arr;
+    first_image->width = new_width;
+    first_image->height = new_height;
+    if(first_image_old_width > second_image->width){
+        Point left_up_corner = {second_image->width, first_image_old_height};
+        Point right_bottom_corner = {new_width - 1, new_height - 1};
+        PaintRectangle(first_image, left_up_corner, right_bottom_corner, fill_color);
+    }
+    else if(first_image_old_width < second_image->width){
+        Point left_up_corner = {first_image_old_width, 0};
+        Point right_bottom_corner = {new_width - 1, first_image_old_height - 1};
+        PaintRectangle(first_image, left_up_corner, right_bottom_corner, fill_color);
+    }
+    cleanup_image_allocation(second_image);
 }
