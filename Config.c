@@ -198,5 +198,9 @@ bool check_is_full_config_for_func(char* FUNC, Config* config){
             return false;
         }
     }
+    else{
+        print_error("К сожалению, у нашей программы нет функции с таким названием!");
+        return false;
+    }
     return true;
 }

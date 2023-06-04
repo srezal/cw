@@ -7,4 +7,4 @@ void print_image_info(PngImage* image);
 void print_success(char* message);
 void print_error(char* message);
 void print_warning(char* message);
-Config parse_opts(int argc, char **argv);
+Config parse_opts(int argc, char **argv, int* last_opt_ind);
