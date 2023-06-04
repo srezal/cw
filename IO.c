@@ -1,6 +1,8 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 #include "IO.h"
 #include "GraphicsStructs.h"
 
@@ -78,9 +80,11 @@ Config parse_opts(int argc, char **argv, int* last_opt_ind){
             {"help",    no_argument,       NULL, 'h'},
             {NULL,      no_argument,       NULL, 0}
     };
+    char** argv_copy = malloc(sizeof(char*) * argc); //getopt breaks argv (((((
+    memcpy(argv_copy, argv, sizeof(char*) * argc);
     Config config = {NULL, NULL, NULL, 0, NULL, false, NULL, 0, 0};
     while (true) {
-        opt = getopt_long(argc, argv, short_opts, longOpts, &longIndex);
+        opt = getopt_long(argc, argv_copy, short_opts, longOpts, &longIndex);
         if(opt == -1) break;
         set_config(&config, opt, optarg, optopt);
     }
