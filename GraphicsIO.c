@@ -149,6 +149,5 @@ void write_png_file(char *file_name, PngImage *image) {
 
     png_write_end(image->png_ptr, NULL);
 
-    cleanup_image_allocation(image);
     fclose(fp);
 }
