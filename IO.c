@@ -59,7 +59,7 @@ void print_warning(char* message){
 }
 
 
-Config parse_opts(int argc, char **argv){
+Config parse_opts(int argc, char **argv, int* last_opt_ind){
     char *short_opts = "a:b:c:t:x:y:h";
     int opt;
     int longIndex;
@@ -84,5 +84,6 @@ Config parse_opts(int argc, char **argv){
         if(opt == -1) break;
         set_config(&config, opt, optarg, optopt);
     }
+    *last_opt_ind = optind;
     return config;
 }
